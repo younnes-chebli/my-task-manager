@@ -1,7 +1,17 @@
 const readline = require('readline');
 var rl = readline.createInterface(process.stdin, process.stdout);
 
-var tasks = [" task1", " task2", " task3"];
+const fs = require('fs');
+var data = fs.readFileSync('tasks.json');
+var tasks = JSON.parse(data);
+
+const saveData = (newData) => {
+    newData = JSON.stringify(newData);
+    fs.writeFile('tasks.json', newData, 'utf-8', (error) => {
+        if(error)
+            console.log(error);
+    });
+};
 
 const continueOrExit = (option) => {
     switch (option) {
@@ -18,13 +28,17 @@ const isEmpty = (array) => {
     return array.length == 0;
 };
 
+const noTasks = () => {
+    rl.question("You have no tasks yet! (Continue [any key] - Exit [0])\n", (option) => {
+        continueOrExit(option);
+    });
+};
+
 const showTasks = () => {
-    if(isEmpty(tasks)) {
-        rl.question("You have no tasks yet! (Continue [any key] - Exit [0])\n", (option) => {
-            continueOrExit(option);
-        });
+    if(isEmpty(tasks.tasks)) {
+        noTasks();
     } else {
-        rl.question(`Here are your tasks (Continue [any key] - Exit [0]):\n ${tasks}\n`, (option) => {
+        rl.question(`Here are your tasks (Continue [any key] - Exit [0]):\n ${tasks.tasks}\n`, (option) => {
             continueOrExit(option);
         });    
     }
@@ -42,17 +56,17 @@ const askForNewAddTaskChoice = (option) => {
 };
 
 const addTask = () => {
-    rl.question(`${tasks}\n Which task do you want to add? (cancel [0])\n`, (task) => {
+    rl.question(`${tasks.tasks}\n Which task do you want to add? (cancel [0])\n`, (task) => {
         if(task === "0") {
             showMain();
         } else if (task === "") {
             addTask();
         } else {
-            tasks.push(` ${task}`);
-            rl.question(`${tasks}\n Add another task? (yes [1] - no [any key])\n`, (option) => {
+            tasks.tasks.push(` ${task}`);
+            saveData(tasks);
+            rl.question(`${tasks.tasks}\n Add another task? (yes [1] - no [any key])\n`, (option) => {
                 askForNewAddTaskChoice(option);
             });
-            showTasks();    
         }
     });
 };
@@ -73,23 +87,28 @@ const outOfArray = (array, index) => {
 };
 
 const deleteTask = () => {
-    rl.question(`${tasks}\n Which task do you want to delete? (give an index begginning from 1 - Cancel [0])\n`, (option) => {
-        option = parseInt(option);
-        if(option == 0) {
-            showMain();
-        } else if(outOfArray(tasks, option)) {
-            deleteTask();
-        } else {
-            tasks.splice(option - 1, 1);
-            if(isEmpty(tasks)) {
+    if(isEmpty(tasks.tasks)) {
+        noTasks();
+    } else {
+        rl.question(`${tasks.tasks}\n Which task do you want to delete? (give an index begginning from 1 - Cancel [0])\n`, (option) => {
+            option = parseInt(option);
+            if(option == 0) {
                 showMain();
+            } else if(outOfArray(tasks.tasks, option)) {
+                deleteTask();
             } else {
-                rl.question(`${tasks}\n Delete another task? (yes [1] - no [any key])\n`, (option) => {
-                    askForNewDeleteTaskChoice(option);
-                });        
+                tasks.tasks.splice(option - 1, 1);
+                saveData(tasks);
+                if(isEmpty(tasks.tasks)) {
+                    showMain();
+                } else {
+                    rl.question(`${tasks.tasks}\n Delete another task? (yes [1] - no [any key])\n`, (option) => {
+                        askForNewDeleteTaskChoice(option);
+                    });        
+                }
             }
-        }
-    });
+        });    
+    }
 };
 
 const askForNewMarkTaskDoneChoice = (option) => {
@@ -104,18 +123,18 @@ const askForNewMarkTaskDoneChoice = (option) => {
 };
 
 const markTaskDone = () => {
-    rl.question(`${tasks}\n Which task do you want to mark as done? (give an index begginning from 1 - Cancel [0])\n`, (option) => {
+    rl.question(`${tasks.tasks}\n Which task do you want to mark as done? (give an index begginning from 1 - Cancel [0])\n`, (option) => {
         option = parseInt(option);
         if(option == 0) {
             showMain();
-        } else if(outOfArray(tasks, option)) {
+        } else if(outOfArray(tasks.tasks, option)) {
             markTaskDone();
-        } else if(tasks[option - 1].includes("done")) {
+        } else if(tasks.tasks[option - 1].includes("done")) {
             markTaskDone();
         } else {
-            tasks[option - 1] = tasks[option - 1].concat(" (done)");
-
-            rl.question(`${tasks}\n Mark another task as done? (yes [1] - no [any key])\n`, (option) => {
+            tasks.tasks[option - 1] = tasks.tasks[option - 1].concat(" (done)");
+            saveData(tasks);
+            rl.question(`${tasks.tasks}\n Mark another task as done? (yes [1] - no [any key])\n`, (option) => {
                 askForNewMarkTaskDoneChoice(option);
             });        
         }
