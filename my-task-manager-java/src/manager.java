@@ -120,6 +120,40 @@ public class manager {
         }
     }
 
+    /*static void askForNewMarkTaskDoneChoice (String option) {
+        switch (option) {
+            case "1":
+                markTaskDone();
+                break;
+            default:
+                showMain();
+                break;
+        }
+    }*/
+
+    static void markTaskDone() {
+        displayTasks(tasks);
+        System.out.println("Which task do you want to mark as done? " +
+                "(give an index begginning from 1 - Cancel [0])");
+        int option = scan.nextInt();
+        if(option == 0) {
+            showMain();
+        } else if(outOfArray(tasks, option)) {
+            markTaskDone();
+        }else if(tasks.get(option - 1).contains("done")) {
+            markTaskDone();
+        } else {
+            tasks.set(option - 1,
+                    tasks.get(option - 1).concat(" (done)"));
+            displayTasks(tasks);
+            /*System.out.println("Which task do you want to mark as done? " +
+                    "(give an index begginning from 1 - Cancel [0])");
+            String optionString = scan.nextLine();
+            askForNewMarkTaskDoneChoice(optionString);*/
+            markTaskDone();
+        }
+    }
+
     static void exit() {
         System.out.println("Bye Bye ;-)");
         System.exit(0);
@@ -144,7 +178,7 @@ public class manager {
                 deleteTask();
                 break;
             case "4":
-                //markTaskDone();
+                markTaskDone();
                 break;
             case "5":
                 exit();
