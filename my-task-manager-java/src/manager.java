@@ -5,9 +5,10 @@ import java.util.Scanner;
 public class manager {
     static Scanner scan = new Scanner(System.in);
     static ArrayList<String> tasks =
-            new ArrayList<>(Arrays.asList(" task1", " task2", " task3"));
+            new ArrayList<>(Arrays.asList("task1", "task2", "task3"));
 
     static void displayTasks(ArrayList<String> array) {
+        System.out.println("---");
         for(String element : array) {
             System.out.println(element);
         }
