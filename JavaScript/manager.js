@@ -56,7 +56,7 @@ const askForNewAddTaskChoice = (option) => {
 };
 
 const addTask = () => {
-    rl.question(`${tasks.tasks}\n Which task do you want to add? (cancel [0])\n`, (task) => {
+    rl.question(`${tasks.tasks}\n Which task do you want to add? (Cancel [0])\n`, (task) => {
         if(task === "0") {
             showMain();
         } else if (task === "") {
@@ -64,7 +64,7 @@ const addTask = () => {
         } else {
             tasks.tasks.push(` ${task}`);
             saveData(tasks);
-            rl.question(`${tasks.tasks}\n Add another task? (yes [1] - no [any key])\n`, (option) => {
+            rl.question(`${tasks.tasks}\n Add another task? (Yes [1] - No [any key])\n`, (option) => {
                 askForNewAddTaskChoice(option);
             });
         }
@@ -142,7 +142,7 @@ const markTaskDone = () => {
 };
 
 const exit = () => {
-    console.log("By by ;-)");
+    console.log("Bye bye ;-)");
     rl.close();
 };
 
